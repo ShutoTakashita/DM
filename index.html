@@ -92,10 +92,15 @@
 
 
       } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        // Desktop style: 2:1 比率で自動リサイズ
+        var ratio = 2 / 1;
+        function resizeCanvas() {
+          var w = Math.min(window.innerWidth * 0.95, 1600);
+          canvas.style.width = w + "px";
+          canvas.style.height = (w / ratio) + "px";
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
       }
 
       loadingBar.style.display = "block";
