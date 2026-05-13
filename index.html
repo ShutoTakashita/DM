@@ -91,20 +91,35 @@
         // config.devicePixelRatio = 1;
 
         // ビューポート変更時にCanvasサイズを再同期（アプリ切り替え・アドレスバー表示等の対策）
+        var resizeTimer = null;
         function syncCanvasSize() {
+          // 即座にスクロールをリセットしてブラウザバーを消す
+          window.scrollTo(0, 0);
           canvas.style.width = window.innerWidth + "px";
           canvas.style.height = window.innerHeight + "px";
         }
-        syncCanvasSize();
-        window.addEventListener("resize", syncCanvasSize);
-        // visualViewport APIが使える場合はそちらも監視
-        if (window.visualViewport) {
-          window.visualViewport.addEventListener("resize", syncCanvasSize);
+        function debouncedSync() {
+          syncCanvasSize();
+          // ブラウザバーのアニメーション完了後に再度同期
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(syncCanvasSize, 200);
+          setTimeout(syncCanvasSize, 500);
         }
-        // アプリ復帰時にも再同期
+        syncCanvasSize();
+        window.addEventListener("resize", debouncedSync);
+        window.addEventListener("orientationchange", function() {
+          setTimeout(syncCanvasSize, 100);
+          setTimeout(syncCanvasSize, 300);
+          setTimeout(syncCanvasSize, 600);
+        });
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", debouncedSync);
+          window.visualViewport.addEventListener("scroll", syncCanvasSize);
+        }
         document.addEventListener("visibilitychange", function() {
           if (!document.hidden) {
             setTimeout(syncCanvasSize, 100);
+            setTimeout(syncCanvasSize, 500);
           }
         });
 
