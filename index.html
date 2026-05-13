@@ -90,6 +90,23 @@
         // performance, uncomment the following line:
         // config.devicePixelRatio = 1;
 
+        // ビューポート変更時にCanvasサイズを再同期（アプリ切り替え・アドレスバー表示等の対策）
+        function syncCanvasSize() {
+          canvas.style.width = window.innerWidth + "px";
+          canvas.style.height = window.innerHeight + "px";
+        }
+        syncCanvasSize();
+        window.addEventListener("resize", syncCanvasSize);
+        // visualViewport APIが使える場合はそちらも監視
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", syncCanvasSize);
+        }
+        // アプリ復帰時にも再同期
+        document.addEventListener("visibilitychange", function() {
+          if (!document.hidden) {
+            setTimeout(syncCanvasSize, 100);
+          }
+        });
 
       } else {
         // Desktop style: 2:1 比率で自動リサイズ
