@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>DM Simulator - 2 Display</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,16 +15,15 @@
     }
     .slot {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative;
       overflow: hidden;
     }
     .slot iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       border: none;
-      aspect-ratio: 960 / 600;
-      max-width: 100%;
-      max-height: 100%;
     }
     .divider {
       height: 2px;
@@ -36,36 +35,50 @@
 <body>
   <div class="container">
     <div class="slot">
-      <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+      <iframe src="../index.html" scrolling="no" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
     </div>
     <div class="divider"></div>
     <div class="slot">
-      <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+      <iframe src="../index.html" scrolling="no" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
     </div>
   </div>
   <script>
+    var GAME_W = 960;
+    var GAME_H = 600;
+    var GAME_RATIO = GAME_W / GAME_H;
+
     function resizeIframes() {
       document.querySelectorAll('.slot').forEach(function(slot) {
         var iframe = slot.querySelector('iframe');
         var sw = slot.clientWidth;
         var sh = slot.clientHeight;
-        var gameRatio = 960 / 600;
         var slotRatio = sw / sh;
+        var w, h;
 
-        if (slotRatio > gameRatio) {
-          // slot is wider than game -> fit by height
-          iframe.style.height = sh + 'px';
-          iframe.style.width = (sh * gameRatio) + 'px';
+        if (slotRatio > GAME_RATIO) {
+          h = sh;
+          w = Math.floor(sh * GAME_RATIO);
         } else {
-          // slot is taller than game -> fit by width
-          iframe.style.width = sw + 'px';
-          iframe.style.height = (sw / gameRatio) + 'px';
+          w = sw;
+          h = Math.floor(sw / GAME_RATIO);
         }
+
+        // iframeをゲーム解像度で描画し、CSSでスロットに収まるようスケール
+        iframe.width = GAME_W;
+        iframe.height = GAME_H;
+        var scale = w / GAME_W;
+        iframe.style.width = GAME_W + 'px';
+        iframe.style.height = GAME_H + 'px';
+        iframe.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
       });
     }
+
     window.addEventListener('resize', resizeIframes);
+    window.addEventListener('orientationchange', function() {
+      setTimeout(resizeIframes, 200);
+    });
     window.addEventListener('load', resizeIframes);
-    resizeIframes();
+    setTimeout(resizeIframes, 100);
   </script>
 </body>
 </html>
