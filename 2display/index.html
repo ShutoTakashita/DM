@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>DM Simulator - 2 Display</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    .container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+    .container > iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    .divider {
+      height: 2px;
+      background: #444;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+    <div class="divider"></div>
+    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+  </div>
+</body>
+</html>
