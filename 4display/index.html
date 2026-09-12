@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>DM Simulator - 4 Display</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,19 +15,52 @@
       width: 100%;
       height: 100%;
     }
-    .container > iframe {
-      width: 100%;
-      height: 100%;
+    .slot {
+      position: relative;
+      overflow: hidden;
+    }
+    .slot iframe {
+      position: absolute;
       border: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
-    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
-    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
-    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+    <div class="slot"><iframe src="../index.html" scrolling="no" allow="clipboard-read; clipboard-write" allowfullscreen></iframe></div>
+    <div class="slot"><iframe src="../index.html" scrolling="no" allow="clipboard-read; clipboard-write" allowfullscreen></iframe></div>
+    <div class="slot"><iframe src="../index.html" scrolling="no" allow="clipboard-read; clipboard-write" allowfullscreen></iframe></div>
+    <div class="slot"><iframe src="../index.html" scrolling="no" allow="clipboard-read; clipboard-write" allowfullscreen></iframe></div>
   </div>
+  <script>
+    var RATIO = 2 / 1;
+
+    function resize() {
+      document.querySelectorAll('.slot').forEach(function(slot) {
+        var iframe = slot.querySelector('iframe');
+        var sw = slot.clientWidth;
+        var sh = slot.clientHeight;
+        var w, h;
+
+        if (sw / sh > RATIO) {
+          h = sh;
+          w = Math.floor(sh * RATIO);
+        } else {
+          h = Math.floor(sw / RATIO);
+          w = sw;
+        }
+
+        iframe.style.width = w + 'px';
+        iframe.style.height = h + 'px';
+        iframe.style.left = Math.floor((sw - w) / 2) + 'px';
+        iframe.style.top = Math.floor((sh - h) / 2) + 'px';
+      });
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', function() { setTimeout(resize, 300); });
+    window.addEventListener('load', resize);
+    resize();
+  </script>
 </body>
 </html>

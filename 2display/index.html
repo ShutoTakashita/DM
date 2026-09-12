@@ -20,9 +20,6 @@
     }
     .slot iframe {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       border: none;
     }
     .divider {
@@ -43,42 +40,37 @@
     </div>
   </div>
   <script>
-    var GAME_W = 960;
-    var GAME_H = 600;
-    var GAME_RATIO = GAME_W / GAME_H;
+    // ゲームのアスペクト比 (canvas width / height)
+    var RATIO = 2 / 1;
 
-    function resizeIframes() {
+    function resize() {
       document.querySelectorAll('.slot').forEach(function(slot) {
         var iframe = slot.querySelector('iframe');
         var sw = slot.clientWidth;
         var sh = slot.clientHeight;
-        var slotRatio = sw / sh;
         var w, h;
 
-        if (slotRatio > GAME_RATIO) {
+        if (sw / sh > RATIO) {
+          // スロットが横長 → 高さに合わせる
           h = sh;
-          w = Math.floor(sh * GAME_RATIO);
+          w = Math.floor(sh * RATIO);
         } else {
+          // スロットが縦長 → 幅に合わせる
+          h = Math.floor(sw / RATIO);
           w = sw;
-          h = Math.floor(sw / GAME_RATIO);
         }
 
-        // iframeをゲーム解像度で描画し、CSSでスロットに収まるようスケール
-        iframe.width = GAME_W;
-        iframe.height = GAME_H;
-        var scale = w / GAME_W;
-        iframe.style.width = GAME_W + 'px';
-        iframe.style.height = GAME_H + 'px';
-        iframe.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+        iframe.style.width = w + 'px';
+        iframe.style.height = h + 'px';
+        iframe.style.left = Math.floor((sw - w) / 2) + 'px';
+        iframe.style.top = Math.floor((sh - h) / 2) + 'px';
       });
     }
 
-    window.addEventListener('resize', resizeIframes);
-    window.addEventListener('orientationchange', function() {
-      setTimeout(resizeIframes, 200);
-    });
-    window.addEventListener('load', resizeIframes);
-    setTimeout(resizeIframes, 100);
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', function() { setTimeout(resize, 300); });
+    window.addEventListener('load', resize);
+    resize();
   </script>
 </body>
 </html>
