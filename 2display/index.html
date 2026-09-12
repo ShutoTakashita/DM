@@ -13,10 +13,18 @@
       width: 100%;
       height: 100%;
     }
-    .container > iframe {
+    .slot {
       flex: 1;
-      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .slot iframe {
       border: none;
+      aspect-ratio: 960 / 600;
+      max-width: 100%;
+      max-height: 100%;
     }
     .divider {
       height: 2px;
@@ -27,9 +35,37 @@
 </head>
 <body>
   <div class="container">
-    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+    <div class="slot">
+      <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+    </div>
     <div class="divider"></div>
-    <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+    <div class="slot">
+      <iframe src="../index.html" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+    </div>
   </div>
+  <script>
+    function resizeIframes() {
+      document.querySelectorAll('.slot').forEach(function(slot) {
+        var iframe = slot.querySelector('iframe');
+        var sw = slot.clientWidth;
+        var sh = slot.clientHeight;
+        var gameRatio = 960 / 600;
+        var slotRatio = sw / sh;
+
+        if (slotRatio > gameRatio) {
+          // slot is wider than game -> fit by height
+          iframe.style.height = sh + 'px';
+          iframe.style.width = (sh * gameRatio) + 'px';
+        } else {
+          // slot is taller than game -> fit by width
+          iframe.style.width = sw + 'px';
+          iframe.style.height = (sw / gameRatio) + 'px';
+        }
+      });
+    }
+    window.addEventListener('resize', resizeIframes);
+    window.addEventListener('load', resizeIframes);
+    resizeIframes();
+  </script>
 </body>
 </html>
